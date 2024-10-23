@@ -3,17 +3,23 @@ import { Page } from '@playwright/test';
 export class DashboardPage {
   constructor(private page: Page) {}
 
+  // Navigera till clients-sidan
   async goToClients() {
-    await this.page.locator('div').filter({ hasText: /^Clients/ }).getByRole('link').click();
+    await this.page.locator('a[href="/clients"]').click(); 
   }
 
-  async createClient() {
-    await this.page.getByRole('link', { name: 'Create Client' }).click();
+  // Navigera till rooms-sidan
+  async goToRooms() {
+    await this.page.locator('a[href="/rooms"]').click();
   }
 
-  async goBack() {
-    await this.page.getByRole('link', { name: 'Back' }).click();
+  // Navigera till bills-sidan
+  async goToBills() {
+    await this.page.locator('a[href="/bills"]').click();
+  }
+
+  // Navigera till reservations-sidan
+  async goToReservations() {
+    await this.page.locator('a[href="/reservations"]').click();
   }
 }
-
-
