@@ -4,6 +4,7 @@ import { DashboardPage } from './pages/dashboard.page';
 import { ClientsPage } from './pages/clients.page';
 import { RoomsPage } from './pages/rooms.page';
 import { ReservationsPage } from './pages/reservations.page';
+import { BillsPage } from './pages/bills.page'; 
  
 
 
@@ -182,17 +183,16 @@ test('5. Delete 102', async ({ page }) => {
     await dashboardPage.goToRooms();
     await roomsPage.goToCreateRooms();
 
-  await page.locator('div').filter({ hasText: /^Number$/ }).getByRole('spinbutton').click();
-  await page.locator('div').filter({ hasText: /^Number$/ }).getByRole('spinbutton').fill('4');
-  await page.locator('div').filter({ hasText: /^Floor$/ }).getByRole('spinbutton').click();
-  await page.locator('div').filter({ hasText: /^Floor$/ }).getByRole('spinbutton').fill('5');
-  await page.locator('div').filter({ hasText: /^Price$/ }).getByRole('spinbutton').click();
-  await page.locator('div').filter({ hasText: /^Price$/ }).getByRole('spinbutton').fill('3500');
-  await page.getByRole('listbox').selectOption('balcony');
-  await page.getByText('Save').click();
-  await page.getByText('4 Floor 5, Room 4Category:').click();
-
-});
+    await page.fill('label:has-text("Number") + input', '4');
+    await page.fill('label:has-text("Floor") + input', '5');
+    await page.fill('label:has-text("Price") + input', '3500');
+    await page.getByRole('listbox').selectOption('balcony');
+    await page.getByText('Save').click();
+  
+    // Verifiera att rummet har adderats
+    const newRoom = page.getByText('Floor 5, Room 4');
+    await expect(newRoom).toBeVisible();
+  });
 
 test('7. Make a new reservation', async ({ page }) => {
   const loginPage = new LoginPage(page);
@@ -291,21 +291,66 @@ test('9. Edit an existing reservation for Jonas Strong', async ({ page }) => {
   await page.getByRole('heading', { name: 'Jonas Strong: 2020-10-05 - 2020-10-10' }).waitFor();
 });
 
+test('10. Edit a bill', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const dashboardPage = new DashboardPage(page);
+  const reservationsPage = new BillsPage(page);
 
+  const username = process.env.TEST_USERNAME || 'defaultUsername';
+  const password = process.env.TEST_PASSWORD || 'defaultPassword';
 
+  await loginPage.navigate();
+  await loginPage.login(username, password);
+  await page.waitForLoadState('networkidle');
 
+  await dashboardPage.goToBills();
 
+  const billCard = page.getByText('ID: 1').locator('..');
+  await billCard.hover(); 
+  const menuButton = billCard.locator('img[src="/ellipsis.svg"]');
+  await menuButton.waitFor({ state: 'visible', timeout: 10000 });
+  await menuButton.click();
 
+  await page.getByText('Edit').click();
 
+  const valueInput = page.locator('label:has-text("Value") + input');
+  await valueInput.fill('5000');
 
+  await page.getByText('Save').click();
+  await page.waitForLoadState('networkidle');
 
-
-
+  
+  const updatedBill = page.getByText('Value: 5000kr');
+  await expect(updatedBill).toBeVisible();
 
 
 
 
 });
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

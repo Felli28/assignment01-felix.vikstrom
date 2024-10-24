@@ -13,6 +13,11 @@ export class DashboardPage {
 
   async goToReservations() {
     await this.page.click('a[href="/reservations"]');
+
+  }
+
+  async goToBills() {
+    await this.page.click('a[href="/bills"]');
   }
 }
 
